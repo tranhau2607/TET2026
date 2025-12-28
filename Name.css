@@ -10,11 +10,30 @@
 }
 
 .player-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 10px;
     border-bottom: 1px solid rgba(0,0,0,0.1);
     font-weight: 600;
     color: #d35400; /* Màu cam đậm phù hợp theme Tết */
     font-size: 16px;
+}
+
+.player-list .player-name {
+    flex-grow: 1; /* Cho tên chiếm hết không gian còn lại */
+}
+
+.player-list .delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0; /* Ngăn nút bị co lại */
 }
 
 .player-list li:last-child {

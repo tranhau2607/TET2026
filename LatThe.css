@@ -36,6 +36,7 @@ input {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   background: #fffefc;
+  touch-action: manipulation;
 }
 
 button {
@@ -48,6 +49,7 @@ button {
   color: #6b2b00;
   font-weight: 700;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  touch-action: manipulation;
 }
 
 
@@ -235,21 +237,15 @@ h2,
   }
 
   .card {
-    height: 200px;
+    height: 180px;
   }
 
   .back .money {
     font-size: 20px;
   }
-
-  .back .message {
-    font-size: 15px;
-    margin-bottom: 5px;
-  }
-
   input {
     width: 250px;
-    font-size: 18px;
+    font-size: 20px;
   }
 
   button {
@@ -266,21 +262,15 @@ h2,
   }
 
   .card {
-    height: 170px;
+    height: 160px;
   }
 
   .back .money {
     font-size: 17px;
   }
-
-  .back .message {
-    font-size: 13px;
-    margin-bottom: 5px;
-  }
-
   input {
     width: 240px;
-    font-size: 16px;
+    font-size: 18px;
   }
 
   button {

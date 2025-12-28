@@ -5,15 +5,40 @@ const startGameBtn = document.getElementById('startGameBtn');
 const randomBtn = document.getElementById('randomPlayerBtn');
 const moneyInput = document.getElementById('moneyInput');
 
-let playerId = 1;
+function updatePlayerIds() {
+    const allPlayers = playerList.querySelectorAll('li');
+    allPlayers.forEach((li, index) => {
+        li.querySelector('.player-id').textContent = `${index + 1}. `;
+    });
+}
 
 function addPlayer() {
     const name = nameInput.value.trim();
     if (name) {
         const li = document.createElement('li');
-        li.textContent = `${playerId}. ${name}`;
+
+        const idSpan = document.createElement('span');
+        idSpan.className = 'player-id';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'player-name';
+        nameSpan.textContent = name;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Xóa';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = () => {
+            playerList.removeChild(li);
+            updatePlayerIds(); // Cập nhật lại số thứ tự
+        };
+
+        li.appendChild(idSpan);
+        li.appendChild(nameSpan);
+        li.appendChild(deleteBtn);
+
         playerList.appendChild(li);
-        playerId++;
+        updatePlayerIds(); // Cập nhật số thứ tự cho người vừa thêm
+
         nameInput.value = '';
         nameInput.focus();
     } else {
@@ -43,10 +68,7 @@ if (randomBtn) {
         const listItems = Array.from(playerList.children);
         if (listItems.length < 2) return; // Cần ít nhất 2 người để trộn
 
-        let currentNames = listItems.map(li => {
-            const text = li.textContent;
-            return text.substring(text.indexOf('.') + 2); // Lấy phần tên sau dấu chấm
-        });
+        let currentNames = listItems.map(li => li.querySelector('.player-name').textContent);
 
         // 2. Trộn ngẫu nhiên mảng tên (Thuật toán Fisher-Yates shuffle)
         for (let i = currentNames.length - 1; i > 0; i--) {
@@ -54,14 +76,10 @@ if (randomBtn) {
             [currentNames[i], currentNames[j]] = [currentNames[j], currentNames[i]];
         }
 
-        // 3. Xóa danh sách cũ và hiển thị lại với ID mới
-        playerList.innerHTML = '';
-        playerId = 1;
-        currentNames.forEach(name => {
-            const li = document.createElement('li');
-            li.textContent = `${playerId}. ${name}`;
-            playerList.appendChild(li);
-            playerId++;
+        // 3. Cập nhật lại tên trong danh sách hiện có
+        const allNameSpans = playerList.querySelectorAll('.player-name');
+        allNameSpans.forEach((span, index) => {
+            span.textContent = currentNames[index];
         });
     });
 }
@@ -92,8 +110,7 @@ if (startGameBtn) {
         const listItems = playerList.querySelectorAll('li');
         listItems.forEach(li => {
             // Lấy tên từ chuỗi "ID. Tên" (bỏ phần số thứ tự đầu tiên)
-            const text = li.textContent;
-            const name = text.substring(text.indexOf('.') + 2); 
+            const name = li.querySelector('.player-name').textContent;
             players.push(name);
         });
         localStorage.setItem('tetPlayers', JSON.stringify(players));

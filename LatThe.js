@@ -1,7 +1,6 @@
 const cardsEl = document.getElementById("cards");
 const backBtn = document.getElementById("backBtn");
 const winSound = document.getElementById("winSound");
-const bgMusic = document.getElementById("bgMusic");
 let winTimeout; // Biến lưu bộ hẹn giờ tắt nhạc
 
 // Lấy danh sách người chơi từ LocalStorage
@@ -180,21 +179,6 @@ initGame();
 if (backBtn) {
     backBtn.addEventListener("click", () => {
         window.location.href = "index.html";
-    });
-}
-
-/* ===== BACKGROUND MUSIC ===== */
-if (bgMusic) {
-    bgMusic.volume = 0.3; // Âm lượng nền 30%
-    // Thử phát ngay lập tức
-    bgMusic.play().catch(() => {
-        // Nếu trình duyệt chặn (do chưa tương tác), chờ click đầu tiên để phát
-        console.log("Chờ tương tác để phát nhạc...");
-        const playAudio = () => {
-            bgMusic.play().catch(e => console.log("Lỗi phát nhạc nền:", e));
-            document.removeEventListener("click", playAudio);
-        };
-        document.addEventListener("click", playAudio);
     });
 }
 
