@@ -1,12 +1,12 @@
-const input = document.getElementById("moneyInput");
-const startBtn = document.getElementById("startBtn");
 const cardsEl = document.getElementById("cards");
+const backBtn = document.getElementById("backBtn");
+const winSound = document.getElementById("winSound");
+const bgMusic = document.getElementById("bgMusic");
+let winTimeout; // Biến lưu bộ hẹn giờ tắt nhạc
 
-/* ===== FORMAT INPUT ===== */
-input.addEventListener("input", () => {
-    let v = input.value.replace(/\D/g, "");
-    input.value = v ? Number(v).toLocaleString("vi-VN") : "";
-});
+// Lấy danh sách người chơi từ LocalStorage
+let players = JSON.parse(localStorage.getItem('tetPlayers')) || [];
+let currentPlayerIndex = 0;
 
 /* ===== SHUFFLE ===== */
 function shuffle(arr) {
@@ -73,20 +73,56 @@ function splitMoneyEvent(totalK) {
     return result;
 }
 
+/* ===== SHOW MODAL ===== */
+function showModal(name, money) {
+    const modal = document.getElementById('winnerModal');
+    const nameEl = document.getElementById('winnerText');
+    const moneyEl = document.getElementById('winnerMoney');
+    
+    if (modal && nameEl && moneyEl) {
+        nameEl.textContent = `Chúc mừng ${name} đã nhận được lì xì`;
+        moneyEl.textContent = `${money} VNĐ`;
+        modal.classList.add('show');
+        
+        // Phát âm thanh khi modal hiện
+        if (winSound) {
+            // Nếu đang có hẹn giờ tắt từ lần trước thì hủy đi
+            if (winTimeout) clearTimeout(winTimeout);
+
+            winSound.volume = 1; // Đảm bảo âm lượng bật
+            winSound.currentTime = 0; // Tua lại từ đầu nếu click liên tục
+            winSound.play().catch(e => {
+                console.log("Lỗi phát âm thanh (thử fallback):", e);
+                // Fallback: Thử tạo đối tượng Audio mới trực tiếp (cập nhật đúng đường dẫn)
+                new Audio('./voice/win.mp3').play().catch(err => console.log("Vẫn không nghe thấy:", err));
+            });
+
+            winTimeout = setTimeout(() => {
+                winSound.pause();
+                winSound.currentTime = 0;
+            }, 5000);
+        }
+
+        // Tự tắt sau 5s
+        setTimeout(() => {
+            modal.classList.remove('show');
+        }, 5000);
+        
+        // Click vào modal để tắt ngay lập tức (nếu muốn)
+        modal.onclick = () => modal.classList.remove('show');
+    }
+}
+
 /* ===== INIT GAME ===== */
 function initGame() {
-    let raw = input.value.replace(/\D/g, "");
+    let raw = localStorage.getItem('tetTotalMoney');
     if (!raw) {
-        alert("Vui lòng nhập tổng tiền");
+        alert("Chưa nhập tiền! Vui lòng quay lại trang chủ.");
+        window.location.href = 'index.html';
         return;
     }
 
     let total = Number(raw);
-    if (total < 10000) {
-        alert("Tổng tiền tối thiểu 10.000đ");
-        return;
-    }
-
     let totalK = Math.floor(total / 1000);
     let values = splitMoneyEvent(totalK);
 
@@ -120,13 +156,47 @@ function initGame() {
             conf.className = 'mini-confetti';
             card.appendChild(conf);
             setTimeout(() => conf.remove(), 900);
+
+            // Xác định người chơi hiện tại
+            let playerName = "Bạn";
+            if (players.length > 0) {
+                playerName = players[currentPlayerIndex % players.length];
+                currentPlayerIndex++;
+            }
+
+            // Hiển thị thông báo sau khi thẻ lật xong (khoảng 600ms)
+            setTimeout(() => {
+                showModal(playerName, (moneyK * 1000).toLocaleString("vi-VN"));
+            }, 800);
         };
 
         cardsEl.appendChild(card);
     });
 }
 
-startBtn.onclick = initGame;
+// Tự động chạy game khi vào trang
+initGame();
+
+if (backBtn) {
+    backBtn.addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
+}
+
+/* ===== BACKGROUND MUSIC ===== */
+if (bgMusic) {
+    bgMusic.volume = 0.3; // Âm lượng nền 30%
+    // Thử phát ngay lập tức
+    bgMusic.play().catch(() => {
+        // Nếu trình duyệt chặn (do chưa tương tác), chờ click đầu tiên để phát
+        console.log("Chờ tương tác để phát nhạc...");
+        const playAudio = () => {
+            bgMusic.play().catch(e => console.log("Lỗi phát nhạc nền:", e));
+            document.removeEventListener("click", playAudio);
+        };
+        document.addEventListener("click", playAudio);
+    });
+}
 
 /* ===== FIREWORKS BACKGROUND ===== */
 (function() {
@@ -270,11 +340,11 @@ startBtn.onclick = initGame;
         if (Math.random() < 0.03) fireworks.push(new Firework());
         for (let i = fireworks.length - 1; i >= 0; i--) {
             fireworks[i].update(i);
-            fireworks[i].draw();
+            if (fireworks[i]) fireworks[i].draw(); // Kiểm tra tồn tại trước khi vẽ
         }
         for (let i = particles.length - 1; i >= 0; i--) {
             particles[i].update(i);
-            particles[i].draw();
+            if (particles[i]) particles[i].draw(); // Kiểm tra tồn tại trước khi vẽ
         }
     }
     loop();

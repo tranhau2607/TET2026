@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lật thẻ may mắn</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧧</text></svg>">
+  <link rel="stylesheet" href="LatThe.css">
+</head>
+
+<body>
+
+  <canvas id="fireworks"></canvas>
+  <h2 class="text">🎁 LẬT THẺ MAY MẮN 🎁</h2>
+
+  <div id="cards" class="cards"></div>
+
+  <!-- Modal thông báo trúng thưởng -->
+  <div id="winnerModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-icon">🎉</div>
+      <div id="winnerText" class="modal-title"></div>
+      <div id="winnerMoney" class="modal-money"></div>
+    </div>
+  </div>
+
+  <!-- Âm thanh trúng thưởng -->
+  <audio id="winSound" src="./voice/win.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="./voice/nen.mp3" loop></audio>
+  <button id="backBtn" class="back-btn">Quay lại</button>
+  <script src="LatThe.js"></script>
+</body>
+
+</html>
