@@ -185,6 +185,7 @@ initGame();
 
 if (backBtn) {
     backBtn.addEventListener("click", () => {
+        sessionStorage.setItem('returningFromGame', 'true');
         window.location.href = "index.html";
     });
 }

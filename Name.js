@@ -154,11 +154,20 @@ if (startGameBtn) {
 }
 
 function loadData() {
-    if (moneyInput) {
-        const savedMoney = localStorage.getItem(STORAGE_KEY_MONEY);
-        if (savedMoney) moneyInput.value = savedMoney;
+    const isReturning = sessionStorage.getItem('returningFromGame');
+
+    if (isReturning === 'true') {
+        sessionStorage.removeItem('returningFromGame'); // Xóa cờ để nếu F5 sẽ reset
+        if (moneyInput) {
+            const savedMoney = localStorage.getItem(STORAGE_KEY_MONEY);
+            if (savedMoney) moneyInput.value = savedMoney;
+        }
+        const savedNames = JSON.parse(localStorage.getItem(STORAGE_KEY_NAMES) || '[]');
+        savedNames.forEach(n => addPlayer(n));
+    } else {
+        // Nếu không phải quay lại (F5 hoặc vào mới), xóa dữ liệu cũ
+        localStorage.removeItem(STORAGE_KEY_NAMES);
+        localStorage.removeItem(STORAGE_KEY_MONEY);
     }
-    const savedNames = JSON.parse(localStorage.getItem(STORAGE_KEY_NAMES) || '[]');
-    savedNames.forEach(n => addPlayer(n));
 }
 loadData();
