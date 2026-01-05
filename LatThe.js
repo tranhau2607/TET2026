@@ -79,7 +79,7 @@ function showModal(name, money) {
     const moneyEl = document.getElementById('winnerMoney');
     
     if (modal && nameEl && moneyEl) {
-        nameEl.textContent = `Chúc mừng ${name} đã nhận được lì xì`;
+        nameEl.innerHTML  = `Chúc mừng <span style="color: #e74c3c; font-weight: bold;">${name}</span> đã nhận được lì xì`;
         moneyEl.textContent = `${money} VNĐ`;
         modal.classList.add('show');
         
@@ -140,6 +140,7 @@ function initGame() {
                 <div class="card-face back">
                     <p class="message">Chúc mừng năm mới 2026!</p>
                     <p class="money">${(moneyK * 1000).toLocaleString("vi-VN")} VNĐ</p>
+                    <p class="flipper-name"></p>
                     <div class="sparkle"></div>
                 </div>
             </div>
@@ -161,6 +162,12 @@ function initGame() {
             if (players.length > 0) {
                 playerName = players[currentPlayerIndex % players.length];
                 currentPlayerIndex++;
+            }
+
+            // Thêm tên người lật vào mặt sau của thẻ
+            const flipperNameEl = card.querySelector('.flipper-name');
+            if (flipperNameEl) {
+                flipperNameEl.textContent = `( ${playerName} )`;
             }
 
             // Hiển thị thông báo sau khi thẻ lật xong (khoảng 600ms)

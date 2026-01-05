@@ -5,6 +5,20 @@ const startGameBtn = document.getElementById('startGameBtn');
 const randomBtn = document.getElementById('randomPlayerBtn');
 const moneyInput = document.getElementById('moneyInput');
 
+const STORAGE_KEY_NAMES = 'tetSetupNames';
+const STORAGE_KEY_MONEY = 'tetSetupMoney';
+
+function saveData() {
+    const names = [];
+    playerList.querySelectorAll('.player-name').forEach(span => {
+        names.push(span.textContent);
+    });
+    localStorage.setItem(STORAGE_KEY_NAMES, JSON.stringify(names));
+    if (moneyInput) {
+        localStorage.setItem(STORAGE_KEY_MONEY, moneyInput.value);
+    }
+}
+
 function updatePlayerIds() {
     const allPlayers = playerList.querySelectorAll('li');
     allPlayers.forEach((li, index) => {
@@ -12,8 +26,16 @@ function updatePlayerIds() {
     });
 }
 
-function addPlayer() {
-    const name = nameInput.value.trim();
+function addPlayer(nameArg) {
+    let name;
+    let isManual = false;
+    if (typeof nameArg === 'string') {
+        name = nameArg;
+    } else {
+        name = nameInput.value.trim();
+        isManual = true;
+    }
+
     if (name) {
         const li = document.createElement('li');
 
@@ -30,6 +52,7 @@ function addPlayer() {
         deleteBtn.onclick = () => {
             playerList.removeChild(li);
             updatePlayerIds(); // Cập nhật lại số thứ tự
+            saveData();
         };
 
         li.appendChild(idSpan);
@@ -39,9 +62,12 @@ function addPlayer() {
         playerList.appendChild(li);
         updatePlayerIds(); // Cập nhật số thứ tự cho người vừa thêm
 
-        nameInput.value = '';
-        nameInput.focus();
-    } else {
+        if (isManual) {
+            nameInput.value = '';
+            nameInput.focus();
+            saveData();
+        }
+    } else if (isManual) {
         alert('Vui lòng nhập tên người chơi!');
     }
 }
@@ -59,6 +85,7 @@ if (moneyInput) {
     moneyInput.addEventListener("input", () => {
         let v = moneyInput.value.replace(/\D/g, "");
         moneyInput.value = v ? Number(v).toLocaleString("vi-VN") : "";
+        saveData();
     });
 }
 
@@ -81,6 +108,7 @@ if (randomBtn) {
         allNameSpans.forEach((span, index) => {
             span.textContent = currentNames[index];
         });
+        saveData();
     });
 }
 
@@ -124,3 +152,13 @@ if (startGameBtn) {
         }, 1500);
     });
 }
+
+function loadData() {
+    if (moneyInput) {
+        const savedMoney = localStorage.getItem(STORAGE_KEY_MONEY);
+        if (savedMoney) moneyInput.value = savedMoney;
+    }
+    const savedNames = JSON.parse(localStorage.getItem(STORAGE_KEY_NAMES) || '[]');
+    savedNames.forEach(n => addPlayer(n));
+}
+loadData();

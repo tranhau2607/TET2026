@@ -386,3 +386,12 @@ h2,
 .back-btn:hover {
   background: #e0e0e0;
 }
+
+.flipper-name {
+  font-size: 14px;
+  font-style: italic;
+  color: #333;
+  margin: 0;
+  height: 16px;
+  /* Giữ khoảng trống, tránh nhảy layout */
+}
